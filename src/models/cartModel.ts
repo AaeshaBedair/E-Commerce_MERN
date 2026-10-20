@@ -3,7 +3,7 @@ import { IProduct } from "./productModel";
 
 const CartStatusEnum = ["active", "completed"];
 
-export interface ICartItem extends Document {
+export interface ICartItem {
   product: IProduct;
   quantity: number;
   unitPrice: number;
