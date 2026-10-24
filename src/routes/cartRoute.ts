@@ -5,6 +5,7 @@ import {
   updateItemInToCart,
   deleteItemInCart,
   clearCart,
+  checkout,
 } from "../services/cartService";
 import validateJWT from "../middlewares/validateJWT";
 import type { ExtendRequest } from "../types/extendedRequest";
@@ -74,5 +75,17 @@ router.delete(
     res.status(response.statusCode).send(response.data);
   },
 );
+
+router.post("/checkout", validateJWT, async (req: ExtendRequest, res) => {
+  if (!req.user) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+
+  const userId = req.user._id.toString();
+  const { address } = req.body;
+  const response = await checkout({ userId, address });
+  res.status(response.statusCode).send(response.data);
+});
 
 export default router;
