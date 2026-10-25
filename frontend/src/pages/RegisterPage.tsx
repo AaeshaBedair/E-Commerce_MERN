@@ -2,6 +2,7 @@ import { Container, Typography, Box, TextField, Button } from "@mui/material";
 import { useRef, useState } from "react";
 import type { SubmitEvent } from "react";
 import { BASE_URL } from "../constants/baseUrl";
+import { useAuth } from "../context/Auth/AuthContext";
 
 const RegisterPage = () => {
   const [error, setError] = useState("");
@@ -11,6 +12,7 @@ const RegisterPage = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const { login } = useAuth();
 
   const onSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,6 +22,9 @@ const RegisterPage = () => {
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
     const confirmPassword = confirmPasswordRef.current?.value;
+    if (!firstName || !lastName || !password || !email) {
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -40,22 +45,26 @@ const RegisterPage = () => {
       });
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-
-        console.log("Register failed:", response.status, errorData);
-
         setError(
           typeof errorData?.message === "string"
             ? errorData.message
             : "Unable to register user, please try again",
         );
-
         return;
       }
-      const data = await response.json();
-      console.log("Registration successful:", data);
+      const token = await response.json();
+      if (!token) {
+        const errorData = await response.json().catch(() => null);
+        setError(
+          typeof errorData?.message === "string"
+            ? errorData.message
+            : "Incorrect Token",
+        );
+        return;
+      }
+      login(email, token);
     } catch (err) {
       setError("Unable to connect to the server");
-      console.error(err);
     }
   };
   return (
