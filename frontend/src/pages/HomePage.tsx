@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import type { Product } from "../types/Product";
 import { BASE_URL } from "../constants/baseUrl";
 import Alert from "@mui/material/Alert";
+import Hero from "../components/Hero";
 
 const HomePage = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -32,19 +33,22 @@ const HomePage = () => {
     );
   }
   return (
-    <Container sx={{ mt: 2 }}>
-      <Grid container spacing={3}>
-        {products.map((p) => (
-          <Grid key={p._id} size={{ xs: 12, sm: 6, md: 4 }}>
-            <ProductCard
-              {...p}
-              image={`http://localhost:3001${p.image}`}
-              //onAddToCart={handleAddToCart}
-            />
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
+    <>
+      <Hero />
+      <Container sx={{ mt: 2 }}>
+        <Grid container spacing={3}>
+          {products.map((p) => (
+            <Grid key={p._id} size={{ xs: 12, sm: 6, md: 4 }}>
+              <ProductCard
+                {...p}
+                image={`http://localhost:3001${p.image}`}
+                //onAddToCart={handleAddToCart}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+    </>
   );
 };
 
