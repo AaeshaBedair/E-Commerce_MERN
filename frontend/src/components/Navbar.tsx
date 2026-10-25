@@ -123,7 +123,7 @@ function Navbar() {
             >
               <MenuItem
                 component={Link}
-                to="/products?category=women"
+                to="/category/for-her"
                 onClick={handleCloseCategories}
                 sx={{ gap: 1.5, py: 1.5 }}
               >
@@ -133,7 +133,7 @@ function Navbar() {
 
               <MenuItem
                 component={Link}
-                to="/products?category=men"
+                to="/category/for-him"
                 onClick={handleCloseCategories}
                 sx={{ gap: 1.5, py: 1.5 }}
               >

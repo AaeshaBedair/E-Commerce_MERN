@@ -1,0 +1,324 @@
+import { useEffect, useState } from "react";
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Alert,
+  CircularProgress,
+  IconButton,
+} from "@mui/material";
+import { Add, Remove, Favorite, FavoriteBorder } from "@mui/icons-material";
+import { useParams } from "react-router";
+import type { Product } from "../types/Product";
+import { BASE_URL } from "../constants/baseUrl";
+
+const ProductDetailsPage = () => {
+  const { id } = useParams<{ id: string }>();
+
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchProduct = async () => {
+      setLoading(true);
+      setError(false);
+      setProduct(null);
+      setQuantity(1);
+      try {
+        const response = await fetch(`${BASE_URL}/products`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        const products: Product[] = await response.json();
+        const selectedProduct = products.find((p) => p._id === id);
+        if (!cancelled) {
+          setProduct(selectedProduct ?? null);
+        }
+      } catch {
+        if (!cancelled) {
+          setError(true);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+    fetchProduct();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+  useEffect(() => {
+    if (!id) return;
+    const savedFavorites: string[] = JSON.parse(
+      localStorage.getItem("favorites") || "[]",
+    );
+    setIsFavorite(savedFavorites.includes(id));
+  }, [id]);
+  const handleAddToFavorites = () => {
+    if (!id) return;
+    const savedFavorites: string[] = JSON.parse(
+      localStorage.getItem("favorites") || "[]",
+    );
+    const updatedFavorites = savedFavorites.includes(id)
+      ? savedFavorites.filter((favoriteId) => favoriteId !== id)
+      : [...savedFavorites, id];
+    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+    setIsFavorite(updatedFavorites.includes(id));
+  };
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          mt: 8,
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+  if (error) {
+    return (
+      <Container sx={{ mt: 5 }}>
+        <Alert severity="error">Failed to load product.</Alert>
+      </Container>
+    );
+  }
+  if (!product) {
+    return (
+      <Container sx={{ mt: 5 }}>
+        <Alert severity="warning">Product not found.</Alert>
+      </Container>
+    );
+  }
+  return (
+    <Box
+      sx={{
+        bgcolor: "#F8F5F0",
+        minHeight: "calc(100vh - 70px)",
+      }}
+    >
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "minmax(0, 1fr)",
+            md: "repeat(2, minmax(0, 1fr))",
+          },
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        {/* LEFT SIDE - PRODUCT NOTES IMAGE */}
+        <Box
+          sx={{
+            width: "100%",
+            minWidth: 0,
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          <Box
+            component="img"
+            src={`${BASE_URL}${product.image.replace(/\.png$/i, "-notes.png")}`}
+            alt={`${product.title} fragrance notes`}
+            sx={{
+              display: "block",
+              width: "100%",
+              height: "auto",
+              boxShadow: "10px 0 25px -12px rgba(51, 37, 28, 0.3)",
+            }}
+          />
+        </Box>
+        {/* RIGHT SIDE - PRODUCT INFORMATION */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            minWidth: 0,
+            px: {
+              xs: 3,
+              sm: 4,
+              md: 5,
+              lg: 8,
+            },
+            py: {
+              xs: 5,
+              md: 6,
+            },
+          }}
+        >
+          <Typography
+            variant="overline"
+            sx={{
+              color: "#A47C58",
+              letterSpacing: 3,
+            }}
+          >
+            ELVÉORA FRAGRANCES
+          </Typography>
+          {/* PRODUCT NAME */}
+          <Typography
+            variant="h3"
+            sx={{
+              fontFamily: "Georgia, serif",
+              color: "#33251C",
+              mt: 2,
+              fontSize: {
+                xs: "32px",
+                sm: "40px",
+                md: "42px",
+                lg: "52px",
+              },
+              overflowWrap: "break-word",
+            }}
+          >
+            {product.title}
+          </Typography>
+          {/* PRICE */}
+          <Typography
+            variant="h5"
+            sx={{
+              mt: 3,
+              color: "#A47C58",
+            }}
+          >
+            LE {product.price}
+          </Typography>
+          {/* DESCRIPTION */}
+          <Typography
+            sx={{
+              mt: 4,
+              color: "#6D625A",
+              lineHeight: 2,
+            }}
+          >
+            {product.description}
+          </Typography>
+          {/* STOCK STATUS */}
+          <Typography
+            sx={{
+              mt: 3,
+              color: product.stock > 0 ? "#587A56" : "#B94A48",
+            }}
+          >
+            {product.stock === 0
+              ? "Out of Stock"
+              : product.stock <= 5
+                ? `Only ${product.stock} Left!`
+                : "In Stock"}
+          </Typography>
+          {/* QUANTITY LABEL */}
+          <Typography
+            sx={{
+              mt: 4,
+              mb: 1.5,
+              fontSize: "13px",
+              fontWeight: 500,
+              letterSpacing: 1,
+              color: "#33251C",
+            }}
+          >
+            QUANTITY
+          </Typography>
+          {/* ACTION BUTTONS */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              flexWrap: "wrap",
+              width: "100%",
+            }}
+          >
+            {/* QUANTITY SELECTOR */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                border: "1px solid #D8C8B8",
+                height: 50,
+              }}
+            >
+              <IconButton
+                onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                disabled={quantity <= 1 || product.stock === 0}
+                sx={{ color: "#33251C" }}
+                aria-label="Decrease quantity"
+              >
+                <Remove />
+              </IconButton>
+
+              <Typography
+                sx={{
+                  minWidth: 35,
+                  textAlign: "center",
+                  color: "#33251C",
+                }}
+              >
+                {quantity}
+              </Typography>
+              <IconButton
+                onClick={() =>
+                  setQuantity((prev) => Math.min(product.stock, prev + 1))
+                }
+                disabled={quantity >= product.stock}
+                sx={{ color: "#33251C" }}
+                aria-label="Increase quantity"
+              >
+                <Add />
+              </IconButton>
+            </Box>
+            {/* ADD TO CART */}
+            <Button
+              variant="contained"
+              disabled={product.stock === 0}
+              sx={{
+                height: 50,
+                px: 5,
+                flex: {
+                  xs: "1 1 100%",
+                  sm: "0 1 auto",
+                },
+                bgcolor: "#33251C",
+                borderRadius: 0,
+                "&:hover": {
+                  bgcolor: "#A47C58",
+                },
+              }}
+            >
+              Add to Cart
+            </Button>
+            {/* ADD TO FAVORITES */}
+            <IconButton
+              onClick={handleAddToFavorites}
+              aria-label={
+                isFavorite ? "Remove from favorites" : "Add to favorites"
+              }
+              sx={{
+                width: 50,
+                height: 50,
+                border: "1px solid #D8C8B8",
+                borderRadius: 0,
+                color: isFavorite ? "#B85C65" : "#33251C",
+              }}
+            >
+              {isFavorite ? <Favorite /> : <FavoriteBorder />}
+            </IconButton>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default ProductDetailsPage;
