@@ -1,5 +1,5 @@
 import type { FC, PropsWithChildren } from "react";
-import {useState } from "react";
+import { useState } from "react";
 import { AuthContext } from "./AuthContext";
 
 const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -15,8 +15,15 @@ const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     localStorage.setItem("username", username);
     localStorage.setItem("token", token);
   };
+  const logout = () => {
+    setUsername(null);
+    setToken(null);
+
+    localStorage.removeItem("username");
+    localStorage.removeItem("token");
+  };
   return (
-    <AuthContext.Provider value={{ username, token, login }}>
+    <AuthContext.Provider value={{ username, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

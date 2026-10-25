@@ -10,6 +10,7 @@ import {
   Typography,
   Button,
   Badge,
+  Divider,
 } from "@mui/material";
 
 import {
@@ -20,13 +21,13 @@ import {
   Female,
   Male,
 } from "@mui/icons-material";
-
+import { useAuth } from "../context/Auth/AuthContext";
 import { Link } from "react-router-dom";
 
 function Navbar() {
   const [anchorElCategories, setAnchorElCategories] =
     React.useState<null | HTMLElement>(null);
-
+  const { username, token, logout } = useAuth();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   );
@@ -212,21 +213,62 @@ function Navbar() {
                 },
               }}
             >
-              <MenuItem
-                component={Link}
-                to="/login"
-                onClick={handleCloseUserMenu}
-              >
-                Login
-              </MenuItem>
+              {token ? (
+                <>
+                  <Box
+                    sx={{
+                      px: 2,
+                      py: 1.5,
+                      backgroundColor: "#FAF8F4",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "14px",
+                        fontWeight: 300,
+                        color: "#9B8064",
+                        letterSpacing: "0.5px",
+                      }}
+                    >
+                      Hello, {username}
+                    </Typography>
+                  </Box>
+                  <Divider sx={{ borderColor: "#EEE9E2" }} />
+                  <MenuItem
+                    component={Link}
+                    to="/account"
+                    onClick={handleCloseUserMenu}
+                  >
+                    My Account
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      logout();
+                      handleCloseUserMenu();
+                    }}
+                  >
+                    Logout
+                  </MenuItem>
+                </>
+              ) : (
+                <>
+                  <MenuItem
+                    component={Link}
+                    to="/login"
+                    onClick={handleCloseUserMenu}
+                  >
+                    Login
+                  </MenuItem>
 
-              <MenuItem
-                component={Link}
-                to="/register"
-                onClick={handleCloseUserMenu}
-              >
-                Register
-              </MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to="/register"
+                    onClick={handleCloseUserMenu}
+                  >
+                    Register
+                  </MenuItem>
+                </>
+              )}
             </Menu>
           </Box>
         </Toolbar>

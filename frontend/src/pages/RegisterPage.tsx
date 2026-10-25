@@ -2,7 +2,7 @@ import { Container, Typography, Box, TextField, Button } from "@mui/material";
 import { useRef, useState } from "react";
 import type { SubmitEvent } from "react";
 import { BASE_URL } from "../constants/baseUrl";
-import { useAuth } from "../context/Auth/AuthContext";
+import { useNavigate } from "react-router";
 
 const RegisterPage = () => {
   const [error, setError] = useState("");
@@ -12,7 +12,7 @@ const RegisterPage = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
-  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const onSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -52,17 +52,12 @@ const RegisterPage = () => {
         );
         return;
       }
-      const token = await response.json();
-      if (!token) {
-        const errorData = await response.json().catch(() => null);
-        setError(
-          typeof errorData?.message === "string"
-            ? errorData.message
-            : "Incorrect Token",
-        );
-        return;
-      }
-      login(email, token);
+      navigate("/login", {
+        replace: true,
+        state: {
+          message: "Account created successfully! Please sign in.",
+        },
+      });
     } catch (err) {
       setError("Unable to connect to the server");
     }
