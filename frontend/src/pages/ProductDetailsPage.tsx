@@ -15,13 +15,11 @@ import { BASE_URL } from "../constants/baseUrl";
 
 const ProductDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
-
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
-
   useEffect(() => {
     let cancelled = false;
     const fetchProduct = async () => {
@@ -117,7 +115,6 @@ const ProductDetailsPage = () => {
           width: "100%",
         }}
       >
-        {/* LEFT SIDE - PRODUCT NOTES IMAGE */}
         <Box
           sx={{
             width: "100%",
@@ -138,7 +135,6 @@ const ProductDetailsPage = () => {
             }}
           />
         </Box>
-        {/* RIGHT SIDE - PRODUCT INFORMATION */}
         <Box
           sx={{
             display: "flex",
@@ -166,7 +162,6 @@ const ProductDetailsPage = () => {
           >
             ELVÉORA FRAGRANCES
           </Typography>
-          {/* PRODUCT NAME */}
           <Typography
             variant="h3"
             sx={{
@@ -184,7 +179,6 @@ const ProductDetailsPage = () => {
           >
             {product.title}
           </Typography>
-          {/* PRICE */}
           <Typography
             variant="h5"
             sx={{
@@ -194,7 +188,6 @@ const ProductDetailsPage = () => {
           >
             LE {product.price}
           </Typography>
-          {/* DESCRIPTION */}
           <Typography
             sx={{
               mt: 4,
@@ -204,7 +197,6 @@ const ProductDetailsPage = () => {
           >
             {product.description}
           </Typography>
-          {/* STOCK STATUS */}
           <Typography
             sx={{
               mt: 3,
@@ -217,7 +209,6 @@ const ProductDetailsPage = () => {
                 ? `Only ${product.stock} Left!`
                 : "In Stock"}
           </Typography>
-          {/* QUANTITY LABEL */}
           <Typography
             sx={{
               mt: 4,
@@ -230,7 +221,6 @@ const ProductDetailsPage = () => {
           >
             QUANTITY
           </Typography>
-          {/* ACTION BUTTONS */}
           <Box
             sx={{
               display: "flex",
@@ -240,7 +230,6 @@ const ProductDetailsPage = () => {
               width: "100%",
             }}
           >
-            {/* QUANTITY SELECTOR */}
             <Box
               sx={{
                 display: "flex",
@@ -257,7 +246,6 @@ const ProductDetailsPage = () => {
               >
                 <Remove />
               </IconButton>
-
               <Typography
                 sx={{
                   minWidth: 35,
@@ -278,7 +266,6 @@ const ProductDetailsPage = () => {
                 <Add />
               </IconButton>
             </Box>
-            {/* ADD TO CART */}
             <Button
               variant="contained"
               disabled={product.stock === 0}
@@ -298,7 +285,6 @@ const ProductDetailsPage = () => {
             >
               Add to Cart
             </Button>
-            {/* ADD TO FAVORITES */}
             <IconButton
               onClick={handleAddToFavorites}
               aria-label={

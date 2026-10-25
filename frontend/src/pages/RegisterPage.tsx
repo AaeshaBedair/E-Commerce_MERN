@@ -26,7 +26,7 @@ const RegisterPage = () => {
       return;
     }
     try {
-      const response = await fetch(`${BASE_URL}/users/register`, {
+      const response = await fetch(`${BASE_URL}/user/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,7 +39,16 @@ const RegisterPage = () => {
         }),
       });
       if (!response.ok) {
-        setError("Unable to register user, please try again");
+        const errorData = await response.json().catch(() => null);
+
+        console.log("Register failed:", response.status, errorData);
+
+        setError(
+          typeof errorData?.message === "string"
+            ? errorData.message
+            : "Unable to register user, please try again",
+        );
+
         return;
       }
       const data = await response.json();

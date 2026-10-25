@@ -23,21 +23,16 @@ const FavoritesPage = () => {
     const fetchFavorites = async () => {
       try {
         const response = await fetch(`${BASE_URL}/products`);
-
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }
-
         const allProducts: Product[] = await response.json();
-
         const favoriteIds: string[] = JSON.parse(
           localStorage.getItem("favorites") || "[]",
         );
-
         const favoriteProducts = allProducts.filter((product) =>
           favoriteIds.includes(product._id),
         );
-
         setProducts(favoriteProducts);
       } catch {
         setError(true);
@@ -45,10 +40,8 @@ const FavoritesPage = () => {
         setLoading(false);
       }
     };
-
     fetchFavorites();
   }, []);
-
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
@@ -56,7 +49,6 @@ const FavoritesPage = () => {
       </Box>
     );
   }
-
   if (error) {
     return (
       <Container sx={{ mt: 5 }}>
@@ -66,7 +58,6 @@ const FavoritesPage = () => {
       </Container>
     );
   }
-
   return (
     <Box
       sx={{
@@ -91,7 +82,6 @@ const FavoritesPage = () => {
         >
           YOUR PERSONAL SELECTION
         </Typography>
-
         <Typography
           variant="h3"
           sx={{
@@ -103,7 +93,6 @@ const FavoritesPage = () => {
         >
           My Favorites
         </Typography>
-
         {products.length === 0 ? (
           <Box
             sx={{
@@ -118,7 +107,6 @@ const FavoritesPage = () => {
                 mb: 2,
               }}
             />
-
             <Typography
               variant="h5"
               sx={{
@@ -129,11 +117,9 @@ const FavoritesPage = () => {
             >
               Your wishlist is empty
             </Typography>
-
             <Typography sx={{ color: "#6D625A", mb: 4 }}>
               Save the fragrances you love and find them here.
             </Typography>
-
             <Button
               component={Link}
               to="/products"

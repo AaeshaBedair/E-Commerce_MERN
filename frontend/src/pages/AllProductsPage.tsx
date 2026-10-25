@@ -1,4 +1,4 @@
-import { Container, Typography, Box } from "@mui/material";
+import { Container, Box } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useState, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
@@ -11,7 +11,6 @@ const AllProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState(false);
   const [search, setSearch] = useState("");
-
   useEffect(() => {
     const fetchData = async () => {
       try {
