@@ -6,6 +6,7 @@ interface CartContextType {
   totalAmount: number;
   refreshCart: () => Promise<void>;
   addItemToCart: (productId: string) => void;
+  clearCart: () => Promise<void>;
 }
 
 export const CartContext = createContext<CartContextType>({
@@ -13,5 +14,6 @@ export const CartContext = createContext<CartContextType>({
   totalAmount: 0,
   addItemToCart: () => {},
   refreshCart: async () => {},
+  clearCart: async () => {},
 });
 export const useCart = () => useContext(CartContext);

@@ -8,7 +8,7 @@ import {
   CircularProgress,
   IconButton,
 } from "@mui/material";
-import { Add, Remove, Favorite, FavoriteBorder } from "@mui/icons-material";
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import { useParams } from "react-router";
 import type { Product } from "../types/Product";
 import { BASE_URL } from "../constants/baseUrl";
@@ -35,7 +35,6 @@ const ProductDetailsPage = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
@@ -43,7 +42,6 @@ const ProductDetailsPage = () => {
       setLoading(true);
       setError(false);
       setProduct(null);
-      setQuantity(1);
       try {
         const response = await fetch(`${BASE_URL}/products`);
         if (!response.ok) {
@@ -228,7 +226,6 @@ const ProductDetailsPage = () => {
               width: "100%",
             }}
           >
-      
             <Button
               variant="contained"
               disabled={product.stock === 0}

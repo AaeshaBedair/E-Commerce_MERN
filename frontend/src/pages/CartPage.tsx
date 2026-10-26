@@ -27,7 +27,7 @@ interface CartResponse {
 
 const CartPage = () => {
   const { token } = useAuth();
-  const { refreshCart } = useCart();
+  const { refreshCart, clearCart } = useCart();
   const navigate = useNavigate();
   const [cart, setCart] = useState<CartResponse | null>(null);
   const [error, setError] = useState("");
@@ -128,6 +128,21 @@ const CartPage = () => {
     } catch (error) {
       console.error(error);
       setError("Failed to remove item from cart.");
+    }
+  };
+  const handleClearCart = async (): Promise<void> => {
+    try {
+      setError("");
+
+      await clearCart();
+
+      setCart({
+        items: [],
+        totalAmount: 0,
+      });
+    } catch (error) {
+      console.error(error);
+      setError("Failed to clear cart.");
     }
   };
 
@@ -305,32 +320,68 @@ const CartPage = () => {
             <Box
               sx={{
                 display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-                gap: 0.5,
+                justifyContent: "space-between",
+                alignItems: "center",
+                mt: 4,
+                gap: 2,
               }}
             >
-              <Typography
+              {/* CLEAR CART BUTTON */}
+              <Button
+                variant="outlined"
+                onClick={handleClearCart}
                 sx={{
-                  fontSize: 15,
                   color: "#786A5F",
+                  borderColor: "#D9C9B8",
+                  borderRadius: 0,
+                  px: 3,
+                  py: 1.2,
+                  fontSize: 12,
+                  letterSpacing: "1px",
+                  fontWeight: 500,
+                  whiteSpace: "nowrap",
+                  "&:hover": {
+                    borderColor: "#B94A48",
+                    color: "#B94A48",
+                    bgcolor: "transparent",
+                  },
                 }}
               >
-                Subtotal
-              </Typography>
+                Clear Cart
+              </Button>
 
-              <Typography
+              {/* SUBTOTAL */}
+              <Box
                 sx={{
-                  fontFamily: "Georgia, serif",
-                  fontSize: 30,
-                  color: "#33251C",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  gap: 0.5,
                 }}
               >
-                LE {cart.totalAmount}
-              </Typography>
+                <Typography
+                  sx={{
+                    fontSize: 15,
+                    color: "#786A5F",
+                  }}
+                >
+                  Subtotal
+                </Typography>
+
+                <Typography
+                  sx={{
+                    fontFamily: "Georgia, serif",
+                    fontSize: 30,
+                    color: "#33251C",
+                  }}
+                >
+                  LE {cart.totalAmount}
+                </Typography>
+              </Box>
             </Box>
           </Box>
         )}
+
         {/* EMPTY CART */}
         {!loading && !error && (!cart || cart.items.length === 0) && (
           <Box
