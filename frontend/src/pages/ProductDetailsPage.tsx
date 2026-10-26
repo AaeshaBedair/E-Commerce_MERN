@@ -15,8 +15,10 @@ import { BASE_URL } from "../constants/baseUrl";
 import { useFavorites } from "../context/Favorites/FavoritesContext";
 import { useAuth } from "../context/Auth/AuthContext";
 import { useNavigate } from "react-router";
+import { useCart } from "../context/Cart/CartContext";
 
 const ProductDetailsPage = () => {
+  const { addItemToCart } = useCart();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { token } = useAuth();
@@ -272,9 +274,11 @@ const ProductDetailsPage = () => {
                 <Add />
               </IconButton>
             </Box>
+
             <Button
               variant="contained"
               disabled={product.stock === 0}
+              onClick={() => addItemToCart(product._id)}
               sx={{
                 height: 50,
                 px: 5,
@@ -291,6 +295,7 @@ const ProductDetailsPage = () => {
             >
               Add to Cart
             </Button>
+
             <IconButton
               onClick={handleAddToFavorites}
               disabled={isUpdating || favoritesLoading}

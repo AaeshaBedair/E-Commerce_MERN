@@ -14,6 +14,7 @@ import { useFavorites } from "../context/Favorites/FavoritesContext";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/Auth/AuthContext";
 import { productCardStyles } from "../styles/productCardStyles";
+import { useCart } from "../context/Cart/CartContext";
 
 type Props = {
   _id: string;
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export default function ProductCard({ _id, title, price, image }: Props) {
+  const { addItemToCart } = useCart();
   const navigate = useNavigate();
   const { token } = useAuth();
   const {
@@ -92,7 +94,9 @@ export default function ProductCard({ _id, title, price, image }: Props) {
       </CardActionArea>
       <Box sx={productCardStyles.priceAndCart}>
         <Typography sx={productCardStyles.price}>LE {price}</Typography>
+
         <IconButton
+          onClick={() => addItemToCart(_id)}
           aria-label={`Add ${title} to cart`}
           sx={productCardStyles.cartButton}
         >

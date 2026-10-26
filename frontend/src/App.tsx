@@ -12,26 +12,29 @@ import { FavoritesProvider } from "./context/Favorites/FavoritesContext";
 import LoginPage from "./pages/LoginPage";
 import CartPage from "./pages/CartPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import CartProvider from "./context/Cart/CartProvider";
 function App() {
   return (
     <AuthProvider>
       <FavoritesProvider>
-        <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/products" element={<AllProductsPage />} />
-            <Route path="/products/:id" element={<ProductDetailsPage />} />
-            <Route path="/category/:category" element={<CategoryPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="/favorites" element={<FavoritesPage />} />
-              <Route path="/cart" element={<CartPage />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+        <CartProvider>
+          <BrowserRouter>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/products" element={<AllProductsPage />} />
+              <Route path="/products/:id" element={<ProductDetailsPage />} />
+              <Route path="/category/:category" element={<CategoryPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/favorites" element={<FavoritesPage />} />
+                <Route path="/cart" element={<CartPage />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
       </FavoritesProvider>
     </AuthProvider>
   );
