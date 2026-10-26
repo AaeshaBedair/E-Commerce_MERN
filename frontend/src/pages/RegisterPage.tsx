@@ -4,6 +4,7 @@ import type { SubmitEvent } from "react";
 import { BASE_URL } from "../constants/baseUrl";
 import { useNavigate } from "react-router";
 
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 const RegisterPage = () => {
   const [error, setError] = useState("");
 
@@ -23,6 +24,12 @@ const RegisterPage = () => {
     const password = passwordRef.current?.value;
     const confirmPassword = confirmPasswordRef.current?.value;
     if (!firstName || !lastName || !password || !email) {
+      return;
+    }
+    if (!passwordRegex.test(password)) {
+      setError(
+        "Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.",
+      );
       return;
     }
 

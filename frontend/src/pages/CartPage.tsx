@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../constants/baseUrl";
 import { useAuth } from "../context/Auth/AuthContext";
+import { IconButton } from "@mui/material";
+import { Add, Remove, DeleteOutlined } from "@mui/icons-material";
+import { useCart } from "../context/Cart/CartContext";
 
 interface CartProduct {
   _id: string;
@@ -24,6 +27,7 @@ interface CartResponse {
 
 const CartPage = () => {
   const { token } = useAuth();
+  const { refreshCart } = useCart();
   const navigate = useNavigate();
   const [cart, setCart] = useState<CartResponse | null>(null);
   const [error, setError] = useState("");
@@ -62,6 +66,70 @@ const CartPage = () => {
 
     fetchCart();
   }, [token]);
+  const updateCartQuantity = async (productId: string, quantity: number) => {
+    try {
+      setError("");
+
+      const response = await fetch(`${BASE_URL}/cart/items`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ productId, quantity }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update quantity");
+      }
+
+      const result = await response.json();
+      const updatedCart: CartResponse = result.data ?? result;
+
+      setCart(updatedCart);
+      await refreshCart();
+    } catch (error) {
+      console.error(error);
+      setError("Failed to update cart quantity.");
+    }
+  };
+  const handleQuantityPlus = async (
+    productId: string,
+    currentQuantity: number,
+  ) => {
+    await updateCartQuantity(productId, currentQuantity + 1);
+  };
+
+  const handleQuantityMinus = async (
+    productId: string,
+    currentQuantity: number,
+  ) => {
+    if (currentQuantity <= 1) return;
+
+    await updateCartQuantity(productId, currentQuantity - 1);
+  };
+  const handleRemoveItem = async (productId: string): Promise<void> => {
+    try {
+      const response = await fetch(`${BASE_URL}/cart/items/${productId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to remove item");
+      }
+
+      const updatedCart: CartResponse = await response.json();
+
+      setCart(updatedCart);
+      await refreshCart();
+    } catch (error) {
+      console.error(error);
+      setError("Failed to remove item from cart.");
+    }
+  };
 
   return (
     <Box
@@ -116,7 +184,6 @@ const CartPage = () => {
             {cart.items.map((item) => (
               <Box
                 key={item.product._id}
-                onClick={() => navigate(`/products/${item.product._id}`)}
                 sx={{
                   display: "flex",
                   alignItems: "center",
@@ -125,14 +192,15 @@ const CartPage = () => {
                   px: { xs: 1, md: 3 },
                   mb: 2,
                   borderBottom: "1px solid #DDD3C8",
-                  cursor: "pointer",
                   transition: "background-color 0.2s",
                   "&:hover": {
                     bgcolor: "#F0EBE5",
                   },
                 }}
               >
+                {/* PRODUCT IMAGE */}
                 <Box
+                  onClick={() => navigate(`/products/${item.product._id}`)}
                   sx={{
                     width: { xs: 110, sm: 150 },
                     height: { xs: 140, sm: 170 },
@@ -140,6 +208,7 @@ const CartPage = () => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
+                    cursor: "pointer",
                   }}
                 >
                   <Box
@@ -154,26 +223,19 @@ const CartPage = () => {
                   />
                 </Box>
 
+                {/* PRODUCT INFO */}
                 <Box sx={{ flex: 1 }}>
                   <Typography
+                    onClick={() => navigate(`/products/${item.product._id}`)}
                     sx={{
                       fontFamily: "Georgia, serif",
                       fontSize: { xs: 21, md: 26 },
                       color: "#33251C",
                       mb: 1,
+                      cursor: "pointer",
                     }}
                   >
                     {item.product.title}
-                  </Typography>
-
-                  <Typography
-                    sx={{
-                      color: "#786A5F",
-                      fontSize: 14,
-                      mb: 1,
-                    }}
-                  >
-                    Quantity: {item.quantity}
                   </Typography>
 
                   <Typography
@@ -186,19 +248,87 @@ const CartPage = () => {
                     LE {item.unitPrice * item.quantity}
                   </Typography>
                 </Box>
+
+                {/* QUANTITY & REMOVE */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "flex-end",
+                    gap: 1.5,
+                  }}
+                >
+                  <IconButton
+                    onClick={() => handleRemoveItem(item.product._id)}
+                    aria-label="Remove from cart"
+                    sx={{ color: "#786A5F" }}
+                  >
+                    <DeleteOutlined />
+                  </IconButton>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      border: "1px solid #D9C9B8",
+                      width: 120,
+                      height: 38,
+                    }}
+                  >
+                    <IconButton
+                      onClick={() =>
+                        handleQuantityMinus(item.product._id, item.quantity)
+                      }
+                      disabled={item.quantity <= 1}
+                      sx={{ color: "#33251C" }}
+                    >
+                      <Remove />
+                    </IconButton>
+
+                    <Typography sx={{ flex: 1, textAlign: "center" }}>
+                      {item.quantity}
+                    </Typography>
+
+                    <IconButton
+                      onClick={() =>
+                        handleQuantityPlus(item.product._id, item.quantity)
+                      }
+                      sx={{ color: "#33251C" }}
+                    >
+                      <Add />
+                    </IconButton>
+                  </Box>
+                </Box>
               </Box>
             ))}
 
-            <Typography
+            <Box
               sx={{
-                textAlign: "right",
-                fontSize: 24,
-                color: "#33251C",
-                mt: 4,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+                gap: 0.5,
               }}
             >
-              Total: LE {cart.totalAmount}
-            </Typography>
+              <Typography
+                sx={{
+                  fontSize: 15,
+                  color: "#786A5F",
+                }}
+              >
+                Subtotal
+              </Typography>
+
+              <Typography
+                sx={{
+                  fontFamily: "Georgia, serif",
+                  fontSize: 30,
+                  color: "#33251C",
+                }}
+              >
+                LE {cart.totalAmount}
+              </Typography>
+            </Box>
           </Box>
         )}
         {/* EMPTY CART */}

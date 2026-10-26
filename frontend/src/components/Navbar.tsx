@@ -25,11 +25,13 @@ import {
 import { useAuth } from "../context/Auth/AuthContext";
 import { Link } from "react-router-dom";
 import { navbarStyles } from "../styles/navbarStyles";
+import { useCart } from "../context/Cart/CartContext";
 
 function Navbar() {
   const [anchorElCategories, setAnchorElCategories] =
     React.useState<null | HTMLElement>(null);
   const { username, token, logout } = useAuth();
+  const { cartItems } = useCart();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   );
@@ -116,7 +118,14 @@ function Navbar() {
               to="/cart"
               sx={navbarStyles.iconButton}
             >
-              <Badge badgeContent={0} showZero sx={navbarStyles.cartBadge}>
+              <Badge
+                badgeContent={cartItems.reduce(
+                  (total, item) => total + item.quantity,
+                  0,
+                )}
+                showZero
+                sx={navbarStyles.cartBadge}
+              >
                 <ShoppingCartOutlined />
               </Badge>
             </IconButton>

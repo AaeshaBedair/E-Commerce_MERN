@@ -1,5 +1,5 @@
 import type { FC, PropsWithChildren } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CartContext } from "./CartContext";
 import type { CartItem } from "../../types/CartItem";
 import { BASE_URL } from "../../constants/baseUrl";
@@ -33,7 +33,86 @@ const CartProvider: FC<PropsWithChildren> = ({ children }) => {
   const [, setError] = useState("");
 
   const { token } = useAuth();
+  const refreshCart = async (): Promise<void> => {
+    if (!token) {
+      setCartItems([]);
+      setTotalAmount(0);
+      return;
+    }
 
+    try {
+      const response = await fetch(`${BASE_URL}/cart`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch cart");
+      }
+
+      const cart: CartApiResponse = await response.json();
+
+      const mappedItems: CartItem[] = cart.items.map((item) => ({
+        productId: item.product._id,
+        title: item.product.title,
+        image: item.product.image,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+      }));
+
+      setCartItems(mappedItems);
+      setTotalAmount(cart.totalAmount);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    if (!token) {
+      setCartItems([]);
+      setTotalAmount(0);
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchCart = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/cart`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch cart");
+        }
+
+        const cart: CartApiResponse = await response.json();
+
+        if (!cancelled) {
+          const cartItemsMapped: CartItem[] = cart.items.map((i) => ({
+            productId: i.product._id,
+            title: i.product.title,
+            image: i.product.image,
+            quantity: i.quantity,
+            unitPrice: i.unitPrice,
+          }));
+
+          setCartItems(cartItemsMapped);
+          setTotalAmount(cart.totalAmount);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCart();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
   const addItemToCart = async (productId: string): Promise<void> => {
     try {
       setError("");
@@ -91,6 +170,7 @@ const CartProvider: FC<PropsWithChildren> = ({ children }) => {
         cartItems,
         totalAmount,
         addItemToCart,
+        refreshCart,
       }}
     >
       {children}

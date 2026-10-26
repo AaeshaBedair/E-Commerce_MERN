@@ -208,6 +208,7 @@ const ProductDetailsPage = () => {
           <Typography
             sx={{
               mt: 3,
+              mb: 3,
               color: product.stock > 0 ? "#587A56" : "#B94A48",
             }}
           >
@@ -217,18 +218,7 @@ const ProductDetailsPage = () => {
                 ? `Only ${product.stock} Left!`
                 : "In Stock"}
           </Typography>
-          <Typography
-            sx={{
-              mt: 4,
-              mb: 1.5,
-              fontSize: "13px",
-              fontWeight: 500,
-              letterSpacing: 1,
-              color: "#33251C",
-            }}
-          >
-            QUANTITY
-          </Typography>
+
           <Box
             sx={{
               display: "flex",
@@ -238,50 +228,14 @@ const ProductDetailsPage = () => {
               width: "100%",
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                border: "1px solid #D8C8B8",
-                height: 50,
-              }}
-            >
-              <IconButton
-                onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                disabled={quantity <= 1 || product.stock === 0}
-                sx={{ color: "#33251C" }}
-                aria-label="Decrease quantity"
-              >
-                <Remove />
-              </IconButton>
-              <Typography
-                sx={{
-                  minWidth: 35,
-                  textAlign: "center",
-                  color: "#33251C",
-                }}
-              >
-                {quantity}
-              </Typography>
-              <IconButton
-                onClick={() =>
-                  setQuantity((prev) => Math.min(product.stock, prev + 1))
-                }
-                disabled={quantity >= product.stock}
-                sx={{ color: "#33251C" }}
-                aria-label="Increase quantity"
-              >
-                <Add />
-              </IconButton>
-            </Box>
-
+      
             <Button
               variant="contained"
               disabled={product.stock === 0}
               onClick={() => addItemToCart(product._id)}
               sx={{
                 height: 50,
-                px: 5,
+                px: 8,
                 flex: {
                   xs: "1 1 100%",
                   sm: "0 1 auto",
