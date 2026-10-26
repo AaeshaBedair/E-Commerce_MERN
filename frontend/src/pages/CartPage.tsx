@@ -379,6 +379,30 @@ const CartPage = () => {
                 </Typography>
               </Box>
             </Box>
+            {/* CHECKOUT BUTTON */}
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={() => navigate("/checkout")}
+              sx={{
+                mt: 5,
+                height: 60,
+                bgcolor: "#33251C",
+                color: "#F8F5F0",
+                borderRadius: 0,
+                fontSize: { xs: 12, sm: 14 },
+                fontWeight: 500,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                boxShadow: "none",
+                "&:hover": {
+                  bgcolor: "#A47C58",
+                  boxShadow: "none",
+                },
+              }}
+            >
+              Proceed to Checkout
+            </Button>
           </Box>
         )}
 
