@@ -4,6 +4,7 @@ export interface IUser extends Document {
   lastName: string;
   email: string;
   password: string;
+  favorites: mongoose.Types.ObjectId[];
 }
 
 const userSchema = new Schema<IUser>({
@@ -11,6 +12,10 @@ const userSchema = new Schema<IUser>({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  favorites: {
+    type: [{ type: Schema.Types.ObjectId, ref: "Product" }],
+    default: [],
+  },
 });
 
 const userModel = mongoose.model<IUser>("User", userSchema);

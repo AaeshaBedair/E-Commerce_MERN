@@ -12,14 +12,29 @@ import { Add, Remove, Favorite, FavoriteBorder } from "@mui/icons-material";
 import { useParams } from "react-router";
 import type { Product } from "../types/Product";
 import { BASE_URL } from "../constants/baseUrl";
+import { useFavorites } from "../context/Favorites/FavoritesContext";
+import { useAuth } from "../context/Auth/AuthContext";
+import { useNavigate } from "react-router";
 
 const ProductDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { token } = useAuth();
+
+  const {
+    isFavorite: checkIsFavorite,
+    toggleFavorite,
+    updatingId,
+    loading: favoritesLoading,
+  } = useFavorites();
+
+  const isFavorite = id ? checkIsFavorite(id) : false;
+  const isUpdating = updatingId === id;
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const [isFavorite, setIsFavorite] = useState(false);
+
   useEffect(() => {
     let cancelled = false;
     const fetchProduct = async () => {
@@ -52,23 +67,14 @@ const ProductDetailsPage = () => {
       cancelled = true;
     };
   }, [id]);
-  useEffect(() => {
+
+  const handleAddToFavorites = async () => {
     if (!id) return;
-    const savedFavorites: string[] = JSON.parse(
-      localStorage.getItem("favorites") || "[]",
-    );
-    setIsFavorite(savedFavorites.includes(id));
-  }, [id]);
-  const handleAddToFavorites = () => {
-    if (!id) return;
-    const savedFavorites: string[] = JSON.parse(
-      localStorage.getItem("favorites") || "[]",
-    );
-    const updatedFavorites = savedFavorites.includes(id)
-      ? savedFavorites.filter((favoriteId) => favoriteId !== id)
-      : [...savedFavorites, id];
-    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-    setIsFavorite(updatedFavorites.includes(id));
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    await toggleFavorite(id);
   };
   if (loading) {
     return (
@@ -287,6 +293,7 @@ const ProductDetailsPage = () => {
             </Button>
             <IconButton
               onClick={handleAddToFavorites}
+              disabled={isUpdating || favoritesLoading}
               aria-label={
                 isFavorite ? "Remove from favorites" : "Add to favorites"
               }

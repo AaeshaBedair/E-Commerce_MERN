@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -11,37 +10,11 @@ import Grid from "@mui/material/Grid";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
-import type { Product } from "../types/Product";
 import { BASE_URL } from "../constants/baseUrl";
+import { useFavorites } from "../context/Favorites/FavoritesContext";
 
 const FavoritesPage = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/products`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-        const allProducts: Product[] = await response.json();
-        const favoriteIds: string[] = JSON.parse(
-          localStorage.getItem("favorites") || "[]",
-        );
-        const favoriteProducts = allProducts.filter((product) =>
-          favoriteIds.includes(product._id),
-        );
-        setProducts(favoriteProducts);
-      } catch {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchFavorites();
-  }, []);
+  const { favorites: products, loading, error } = useFavorites();
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>

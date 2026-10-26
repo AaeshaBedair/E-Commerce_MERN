@@ -10,8 +10,9 @@ import {
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { useEffect, useState } from "react";
+import { useFavorites } from "../context/Favorites/FavoritesContext";
 import { useNavigate } from "react-router";
+import { useAuth } from "../context/Auth/AuthContext";
 
 type Props = {
   _id: string;
@@ -22,30 +23,22 @@ type Props = {
 
 export default function ProductCard({ _id, title, price, image }: Props) {
   const navigate = useNavigate();
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  useEffect(() => {
-    const savedFavorites: string[] = JSON.parse(
-      localStorage.getItem("favorites") || "[]",
-    );
-
-    setIsFavorite(savedFavorites.includes(_id));
-  }, [_id]);
-
-  const handleFavorite = () => {
-    const savedFavorites: string[] = JSON.parse(
-      localStorage.getItem("favorites") || "[]",
-    );
-
-    const updatedFavorites = savedFavorites.includes(_id)
-      ? savedFavorites.filter((id) => id !== _id)
-      : [...savedFavorites, _id];
-
-    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-
-    setIsFavorite(updatedFavorites.includes(_id));
+  const { token } = useAuth();
+  const {
+    isFavorite: checkIsFavorite,
+    toggleFavorite,
+    updatingId,
+    loading,
+  } = useFavorites();
+  const isFavorite = checkIsFavorite(_id);
+  const isUpdating = updatingId === _id;
+  const handleFavorite = async () => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    await toggleFavorite(_id);
   };
-
   return (
     <Card
       elevation={0}
@@ -108,6 +101,7 @@ export default function ProductCard({ _id, title, price, image }: Props) {
         {/* FAVORITE ICON */}
         <IconButton
           onClick={handleFavorite}
+          disabled={isUpdating || loading}
           aria-label={
             isFavorite
               ? `Remove ${title} from favorites`

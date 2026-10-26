@@ -5,6 +5,7 @@ import userRoute from "./routes/userRoute";
 import productRoute from "./routes/productRoute";
 import cartRoute from "./routes/cartRoute";
 import { seedInitialProducts } from "./services/productService";
+import favoritesRoute from "./routes/favoritesRoute";
 import path from "node:path";
 import cors from "cors";
 
@@ -26,6 +27,7 @@ seedInitialProducts();
 app.use("/user", userRoute);
 app.use("/products", productRoute);
 app.use("/cart", cartRoute);
+app.use("/user/favorites", favoritesRoute);
 app.use(
   "/images",
   express.static(path.join(process.cwd(), "public", "images")),
