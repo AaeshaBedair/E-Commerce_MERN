@@ -21,8 +21,10 @@ import {
   Female,
   Male,
 } from "@mui/icons-material";
+
 import { useAuth } from "../context/Auth/AuthContext";
 import { Link } from "react-router-dom";
+import { navbarStyles } from "../styles/navbarStyles";
 
 function Navbar() {
   const [anchorElCategories, setAnchorElCategories] =
@@ -31,77 +33,32 @@ function Navbar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   );
-
   const handleCloseCategories = () => {
     setAnchorElCategories(null);
   };
-
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
 
-  const navButtonStyle = {
-    color: "#1C1C1C",
-    fontSize: "13px",
-    fontWeight: 500,
-    letterSpacing: "1px",
-    textTransform: "uppercase",
-    "&:hover": {
-      backgroundColor: "transparent",
-      color: "#9B8064",
-    },
-  };
-
   return (
-    <AppBar
-      position="sticky"
-      elevation={0}
-      sx={{
-        backgroundColor: "#FAF8F4",
-        color: "#1C1C1C",
-        borderBottom: "1px solid #EEE9E2",
-      }}
-    >
+    <AppBar position="sticky" elevation={0} sx={navbarStyles.appBar}>
       <Container maxWidth="xl">
-        <Toolbar
-          disableGutters
-          sx={{
-            minHeight: "70px",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
+        <Toolbar disableGutters sx={navbarStyles.toolbar}>
           {/* LOGO */}
-          <Typography
-            component={Link}
-            to="/"
-            sx={{
-              fontSize: "32px",
-              fontWeight: 400,
-              letterSpacing: "3px",
-              color: "#1C1C1C",
-              textDecoration: "none",
-            }}
-          >
+          <Typography component={Link} to="/" sx={navbarStyles.logo}>
             ELVÉORA
           </Typography>
 
           {/* CENTER LINKS */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 3,
-            }}
-          >
-            <Button component={Link} to="/products" sx={navButtonStyle}>
+          <Box sx={navbarStyles.centerLinks}>
+            <Button component={Link} to="/products" sx={navbarStyles.navButton}>
               All Products
             </Button>
 
             <Button
               endIcon={<KeyboardArrowDown />}
               onClick={(event) => setAnchorElCategories(event.currentTarget)}
-              sx={navButtonStyle}
+              sx={navbarStyles.navButton}
             >
               Categories
             </Button>
@@ -112,13 +69,7 @@ function Navbar() {
               onClose={handleCloseCategories}
               slotProps={{
                 paper: {
-                  sx: {
-                    mt: 1,
-                    minWidth: 180,
-                    backgroundColor: "#FAF8F4",
-                    borderRadius: "10px",
-                    boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                  },
+                  sx: navbarStyles.categoriesMenuPaper,
                 },
               }}
             >
@@ -126,7 +77,7 @@ function Navbar() {
                 component={Link}
                 to="/category/for-her"
                 onClick={handleCloseCategories}
-                sx={{ gap: 1.5, py: 1.5 }}
+                sx={navbarStyles.categoryMenuItem}
               >
                 <Female fontSize="small" />
                 For Her
@@ -136,48 +87,36 @@ function Navbar() {
                 component={Link}
                 to="/category/for-him"
                 onClick={handleCloseCategories}
-                sx={{ gap: 1.5, py: 1.5 }}
+                sx={navbarStyles.categoryMenuItem}
               >
                 <Male fontSize="small" />
                 For Him
               </MenuItem>
             </Menu>
 
-            <Button component={Link} to="/about" sx={navButtonStyle}>
+            <Button component={Link} to="/about" sx={navbarStyles.navButton}>
               About
             </Button>
           </Box>
 
           {/* RIGHT ICONS */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-            }}
-          >
+          <Box sx={navbarStyles.rightIcons}>
             {/* FAVORITES */}
             <IconButton
               component={Link}
               to="/favorites"
-              sx={{ color: "#1C1C1C" }}
+              sx={navbarStyles.iconButton}
             >
               <FavoriteBorder />
             </IconButton>
 
             {/* CART */}
-            <IconButton component={Link} to="/cart" sx={{ color: "#1C1C1C" }}>
-              <Badge
-                badgeContent={0}
-                showZero
-                sx={{
-                  "& .MuiBadge-badge": {
-                    backgroundColor: "#E8D8C4",
-                    color: "#1C1C1C",
-                    fontSize: "10px",
-                  },
-                }}
-              >
+            <IconButton
+              component={Link}
+              to="/cart"
+              sx={navbarStyles.iconButton}
+            >
+              <Badge badgeContent={0} showZero sx={navbarStyles.cartBadge}>
                 <ShoppingCartOutlined />
               </Badge>
             </IconButton>
@@ -185,7 +124,7 @@ function Navbar() {
             {/* USER */}
             <IconButton
               onClick={(event) => setAnchorElUser(event.currentTarget)}
-              sx={{ color: "#1C1C1C" }}
+              sx={navbarStyles.iconButton}
             >
               <PersonOutlined />
             </IconButton>
@@ -204,36 +143,20 @@ function Navbar() {
               }}
               slotProps={{
                 paper: {
-                  sx: {
-                    mt: 1,
-                    minWidth: 160,
-                    backgroundColor: "#FAF8F4",
-                    borderRadius: "10px",
-                  },
+                  sx: navbarStyles.userMenuPaper,
                 },
               }}
             >
               {token ? (
                 <>
-                  <Box
-                    sx={{
-                      px: 2,
-                      py: 1.5,
-                      backgroundColor: "#FAF8F4",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        fontWeight: 300,
-                        color: "#9B8064",
-                        letterSpacing: "0.5px",
-                      }}
-                    >
+                  <Box sx={navbarStyles.userGreetingBox}>
+                    <Typography sx={navbarStyles.userGreetingText}>
                       Hello, {username}
                     </Typography>
                   </Box>
-                  <Divider sx={{ borderColor: "#EEE9E2" }} />
+
+                  <Divider sx={navbarStyles.divider} />
+
                   <MenuItem
                     component={Link}
                     to="/account"

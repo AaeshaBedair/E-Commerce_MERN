@@ -10,6 +10,8 @@ import AboutPage from "./pages/AboutPage";
 import AuthProvider from "./context/Auth/AuthProvider";
 import { FavoritesProvider } from "./context/Favorites/FavoritesContext";
 import LoginPage from "./pages/LoginPage";
+import CartPage from "./pages/CartPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   return (
     <AuthProvider>
@@ -23,8 +25,11 @@ function App() {
             <Route path="/products" element={<AllProductsPage />} />
             <Route path="/products/:id" element={<ProductDetailsPage />} />
             <Route path="/category/:category" element={<CategoryPage />} />
-            <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/favorites" element={<FavoritesPage />} />
+              <Route path="/cart" element={<CartPage />} />
+            </Route>
           </Routes>
         </BrowserRouter>
       </FavoritesProvider>

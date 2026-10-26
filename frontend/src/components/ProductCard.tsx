@@ -13,6 +13,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useFavorites } from "../context/Favorites/FavoritesContext";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/Auth/AuthContext";
+import { productCardStyles } from "../styles/productCardStyles";
 
 type Props = {
   _id: string;
@@ -40,65 +41,25 @@ export default function ProductCard({ _id, title, price, image }: Props) {
     await toggleFavorite(_id);
   };
   return (
-    <Card
-      elevation={0}
-      sx={{
-        bgcolor: "transparent",
-        border: "none",
-        borderRadius: 0,
-        boxShadow: "none",
-        overflow: "visible",
-
-        "&:hover .product-image": {
-          transform: "scale(1.04)",
-        },
-
-        "&:hover .image-container": {
-          bgcolor: "rgba(164, 124, 88, 0.035)",
-        },
-      }}
-    >
-      {/* IMAGE AREA */}
-      <Box sx={{ position: "relative" }}>
+    <Card elevation={0} sx={productCardStyles.card}>
+      <Box sx={productCardStyles.imageArea}>
         <CardActionArea
           onClick={() => navigate(`/products/${_id}`)}
-          sx={{
-            "& .MuiCardActionArea-focusHighlight": {
-              opacity: 0,
-            },
-          }}
+          sx={productCardStyles.cardActionArea}
         >
           <Box
             className="image-container"
-            sx={{
-              height: 300,
-              width: "100%",
-              bgcolor: "transparent",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              overflow: "hidden",
-              transition: "background-color 0.4s ease",
-            }}
+            sx={productCardStyles.imageContainer}
           >
             <CardMedia
               className="product-image"
               component="img"
               image={image}
               alt={title}
-              sx={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-                p: 2,
-                boxSizing: "border-box",
-                transition: "transform 0.4s ease",
-              }}
+              sx={productCardStyles.productImage}
             />
           </Box>
         </CardActionArea>
-
-        {/* FAVORITE ICON */}
         <IconButton
           onClick={handleFavorite}
           disabled={isUpdating || loading}
@@ -107,16 +68,12 @@ export default function ProductCard({ _id, title, price, image }: Props) {
               ? `Remove ${title} from favorites`
               : `Add ${title} to favorites`
           }
-          sx={{
-            position: "absolute",
-            top: 12,
-            right: 12,
-            color: isFavorite ? "#A47C58" : "#6D625A",
-            bgcolor: "rgba(248,245,240,0.8)",
-            "&:hover": {
-              bgcolor: "#F8F5F0",
+          sx={[
+            productCardStyles.favoriteButton,
+            {
+              color: isFavorite ? "#A47C58" : "#6D625A",
             },
-          }}
+          ]}
         >
           {isFavorite ? (
             <FavoriteIcon fontSize="small" />
@@ -125,63 +82,19 @@ export default function ProductCard({ _id, title, price, image }: Props) {
           )}
         </IconButton>
       </Box>
-
-      {/* PRODUCT INFORMATION */}
       <CardActionArea
         onClick={() => navigate(`/products/${_id}`)}
-        sx={{
-          "& .MuiCardActionArea-focusHighlight": {
-            opacity: 0,
-          },
-        }}
+        sx={productCardStyles.cardActionArea}
       >
-        <CardContent
-          sx={{
-            px: 0,
-            pt: 2,
-            pb: "4px !important",
-          }}
-        >
-          <Typography
-            sx={{
-              fontFamily: "Georgia, serif",
-              fontSize: "20px",
-              fontWeight: 400,
-              color: "#33251C",
-            }}
-          >
-            {title}
-          </Typography>
+        <CardContent sx={productCardStyles.cardContent}>
+          <Typography sx={productCardStyles.title}>{title}</Typography>
         </CardContent>
       </CardActionArea>
-
-      {/* PRICE AND CART */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          pb: 1,
-        }}
-      >
-        <Typography
-          sx={{
-            color: "#786A5F",
-            fontSize: "15px",
-            fontWeight: 400,
-          }}
-        >
-          LE {price}
-        </Typography>
-
+      <Box sx={productCardStyles.priceAndCart}>
+        <Typography sx={productCardStyles.price}>LE {price}</Typography>
         <IconButton
           aria-label={`Add ${title} to cart`}
-          sx={{
-            color: "#A47C58",
-            "&:hover": {
-              bgcolor: "#EFE8DF",
-            },
-          }}
+          sx={productCardStyles.cartButton}
         >
           <AddShoppingCartIcon fontSize="small" />
         </IconButton>
