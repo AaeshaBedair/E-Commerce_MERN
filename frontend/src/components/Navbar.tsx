@@ -26,8 +26,9 @@ import { useAuth } from "../context/Auth/AuthContext";
 import { Link } from "react-router-dom";
 import { navbarStyles } from "../styles/navbarStyles";
 import { useCart } from "../context/Cart/CartContext";
-
+import { useNavigate } from "react-router";
 function Navbar() {
+  const navigate = useNavigate();
   const [anchorElCategories, setAnchorElCategories] =
     React.useState<null | HTMLElement>(null);
   const { username, token, logout } = useAuth();
@@ -40,6 +41,10 @@ function Navbar() {
   };
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+  const handleMyOrders = () => {
+    navigate("/my-orders");
+    handleCloseUserMenu();
   };
 
   return (
@@ -165,14 +170,7 @@ function Navbar() {
                   </Box>
 
                   <Divider sx={navbarStyles.divider} />
-
-                  <MenuItem
-                    component={Link}
-                    to="/account"
-                    onClick={handleCloseUserMenu}
-                  >
-                    My orders
-                  </MenuItem>
+                  <MenuItem onClick={handleMyOrders}>My orders</MenuItem>
                   <MenuItem
                     onClick={() => {
                       logout();
