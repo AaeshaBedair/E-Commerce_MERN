@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Box, Container, Typography, Button, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../constants/baseUrl";
@@ -13,7 +13,9 @@ const CheckoutPage = () => {
   const { token } = useAuth();
   const { cartItems, totalAmount, refreshCart } = useCart();
   const navigate = useNavigate();
-
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -94,12 +96,13 @@ const CheckoutPage = () => {
       sx={{
         bgcolor: "#F8F5F0",
         minHeight: "100vh",
-        py: 9,
+        pt: { xs: "110px", md: "130px" },
+        pb: 10,
       }}
     >
       <Container maxWidth="lg">
         {/* PAGE HEADING */}
-        <Box sx={{ textAlign: "center", mb: 7 }}>
+        <Box sx={{ textAlign: "center", mb: 5 }}>
           <Typography
             sx={{
               color: "#A47C58",
@@ -126,27 +129,16 @@ const CheckoutPage = () => {
         {/* CHECKOUT CONTENT */}
         <Box
           sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              md: "1.4fr 1fr",
-            },
-            gap: 6,
+            display: "flex",
+            flexDirection: "column",
+            gap: 4,
+            width: "100%",
+            maxWidth: 900,
+            mx: "auto",
           }}
         >
           {/* DELIVERY DETAILS */}
           <Box>
-            <Typography
-              sx={{
-                fontFamily: "Georgia, serif",
-                fontSize: 26,
-                color: "#33251C",
-                mb: 3,
-              }}
-            >
-              Delivery Details
-            </Typography>
-
             <Typography
               sx={{
                 color: "#786A5F",
@@ -159,7 +151,7 @@ const CheckoutPage = () => {
             <TextField
               fullWidth
               multiline
-              minRows={4}
+              minRows={3}
               placeholder="Enter your full delivery address"
               value={address}
               disabled={loading}

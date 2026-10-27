@@ -15,6 +15,9 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../context/Auth/AuthContext";
 import { productCardStyles } from "../styles/productCardStyles";
 import { useCart } from "../context/Cart/CartContext";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
+import Tooltip from "@mui/material/Tooltip";
+import { useState } from "react";
 
 type Props = {
   _id: string;
@@ -24,7 +27,31 @@ type Props = {
 };
 
 export default function ProductCard({ _id, title, price, image }: Props) {
-  const { addItemToCart } = useCart();
+  const { addItemToCart, cartItems } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
+
+  const isInCart = cartItems.some((item) => item.productId === _id);
+
+  const handleCartClick = async (): Promise<void> => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    if (isInCart) {
+      navigate("/cart");
+      return;
+    }
+
+    if (isAdding) return;
+
+    try {
+      setIsAdding(true);
+      await addItemToCart(_id);
+    } finally {
+      setIsAdding(false);
+    }
+  };
   const navigate = useNavigate();
   const { token } = useAuth();
   const {
@@ -95,13 +122,24 @@ export default function ProductCard({ _id, title, price, image }: Props) {
       <Box sx={productCardStyles.priceAndCart}>
         <Typography sx={productCardStyles.price}>LE {price}</Typography>
 
-        <IconButton
-          onClick={() => addItemToCart(_id)}
-          aria-label={`Add ${title} to cart`}
-          sx={productCardStyles.cartButton}
-        >
-          <AddShoppingCartIcon fontSize="small" />
-        </IconButton>
+        <Tooltip title={isInCart ? "View Cart" : "Add to Cart"} arrow>
+          <span>
+            <IconButton
+              onClick={handleCartClick}
+              disabled={isAdding}
+              aria-label={
+                isInCart ? `View ${title} in cart` : `Add ${title} to cart`
+              }
+              sx={productCardStyles.cartButton}
+            >
+              {isInCart ? (
+                <CheckCircleOutlinedIcon fontSize="small" />
+              ) : (
+                <AddShoppingCartIcon fontSize="small" />
+              )}
+            </IconButton>
+          </span>
+        </Tooltip>
       </Box>
     </Card>
   );

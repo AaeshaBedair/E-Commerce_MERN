@@ -171,7 +171,7 @@ function Navbar() {
                     to="/account"
                     onClick={handleCloseUserMenu}
                   >
-                    My Account
+                    My orders
                   </MenuItem>
                   <MenuItem
                     onClick={() => {

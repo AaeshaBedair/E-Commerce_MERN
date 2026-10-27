@@ -18,7 +18,7 @@ import { useNavigate } from "react-router";
 import { useCart } from "../context/Cart/CartContext";
 
 const ProductDetailsPage = () => {
-  const { addItemToCart } = useCart();
+  const { addItemToCart, cartItems } = useCart();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { token } = useAuth();
@@ -35,6 +35,34 @@ const ProductDetailsPage = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+
+  const isInCart = cartItems.some((item) => item.productId === id);
+
+  const handleCartClick = async (): Promise<void> => {
+    if (!id) return;
+
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    if (isInCart) {
+      navigate("/cart");
+      return;
+    }
+
+    if (isAdding) return;
+
+    try {
+      setIsAdding(true);
+      await addItemToCart(id);
+    } catch (error) {
+      console.error("Failed to add product to cart:", error);
+    } finally {
+      setIsAdding(false);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -228,8 +256,8 @@ const ProductDetailsPage = () => {
           >
             <Button
               variant="contained"
-              disabled={product.stock === 0}
-              onClick={() => addItemToCart(product._id)}
+              disabled={isAdding || (product.stock === 0 && !isInCart)}
+              onClick={handleCartClick}
               sx={{
                 height: 50,
                 px: 8,
@@ -237,14 +265,15 @@ const ProductDetailsPage = () => {
                   xs: "1 1 100%",
                   sm: "0 1 auto",
                 },
-                bgcolor: "#33251C",
+                bgcolor: isInCart ? "#A47C58" : "#33251C",
+                color: "#FFFFFF",
                 borderRadius: 0,
                 "&:hover": {
-                  bgcolor: "#A47C58",
+                  bgcolor: isInCart ? "#8C6545" : "#A47C58",
                 },
               }}
             >
-              Add to Cart
+              {isAdding ? "Adding..." : isInCart ? "View Cart" : "Add to Cart"}
             </Button>
 
             <IconButton
