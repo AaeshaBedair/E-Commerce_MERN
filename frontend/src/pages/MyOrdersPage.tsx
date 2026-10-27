@@ -8,7 +8,7 @@ import {
   Alert,
 } from "@mui/material";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useAuth } from "../context/Auth/AuthContext";
 
 const MyOrdersPage = () => {

@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { Box, Container, Typography, Button, TextField } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { BASE_URL } from "../constants/baseUrl";
 import { useAuth } from "../context/Auth/AuthContext";
 import { useCart } from "../context/Cart/CartContext";

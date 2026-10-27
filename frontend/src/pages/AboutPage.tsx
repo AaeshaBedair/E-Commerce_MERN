@@ -1,5 +1,5 @@
 import { Box, Container, Typography, Button } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 const AboutPage = () => {
   return (

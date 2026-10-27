@@ -1,7 +1,7 @@
 
 import { Box, Button, Container, Typography } from "@mui/material";
 import { CheckCircleOutlined } from "@mui/icons-material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 
 interface OrderSuccessState {
   orderId: string;

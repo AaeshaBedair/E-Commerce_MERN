@@ -23,10 +23,9 @@ import {
 } from "@mui/icons-material";
 
 import { useAuth } from "../context/Auth/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { navbarStyles } from "../styles/navbarStyles";
 import { useCart } from "../context/Cart/CartContext";
-import { useNavigate } from "react-router";
 function Navbar() {
   const navigate = useNavigate();
   const [anchorElCategories, setAnchorElCategories] =

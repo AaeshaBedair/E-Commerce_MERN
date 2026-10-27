@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import ProductCard from "../components/ProductCard";
 import { BASE_URL } from "../constants/baseUrl";
 import { useFavorites } from "../context/Favorites/FavoritesContext";
