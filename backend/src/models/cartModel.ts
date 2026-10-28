@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, ObjectId } from "mongoose";
 import { IProduct } from "./productModel";
 
-const CartStatusEnum = ["active", "completed"];
+const CartStatusEnum = ["active", "processing", "completed"];
 
 export interface ICartItem {
   product: IProduct;
@@ -13,7 +13,7 @@ export interface ICart extends Document {
   userId: ObjectId | string;
   items: ICartItem[];
   totalAmount: number;
-  status: "active" | "completed";
+  status: "active" | "processing" | "completed";
 }
 
 const cartItemSchema: Schema = new Schema<ICartItem>({

@@ -2,7 +2,7 @@ import { cartModel } from "../models/cartModel";
 import productModel from "../models/productModel";
 import { ICartItem } from "../models/cartModel";
 import { IOrder, IOrderItem, orderModel } from "../models/orderModel";
-
+import mongoose from "mongoose";
 interface CreateCardForUser {
   userId: string;
 }
@@ -180,38 +180,152 @@ interface Checkout {
 }
 
 export const checkout = async ({ userId, address }: Checkout) => {
-  if (!address) {
-    return { data: "Please add your address", statusCode: 404 };
+  if (!address?.trim()) {
+    return { data: "Please add your address", statusCode: 400 };
   }
-  const cart = await getActiveCartForUser({ userId });
-  if (!cart) {
-    return { data: "Cart not found", statusCode: 404 };
+
+  const cart = await cartModel.findOne({
+    userId,
+    status: "active",
+  });
+
+  if (!cart || cart.items.length === 0) {
+    return { data: "Cart is empty", statusCode: 400 };
   }
 
   const orderItems: IOrderItem[] = [];
 
   for (const item of cart.items) {
-    const product = await productModel.findById(item.product);
+    if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
+      return { data: "Invalid item quantity", statusCode: 400 };
+    }
+
+    const product = await productModel.findById(item.product.toString());
+
     if (!product) {
       return { data: "Product not found", statusCode: 400 };
     }
-    const orderItem: IOrderItem = {
+
+    if (product.stock < item.quantity) {
+      return {
+        data: `Insufficient stock for ${product.title}`,
+        statusCode: 400,
+      };
+    }
+
+    orderItems.push({
       productTitle: product.title,
       productImage: product.image,
       unitPrice: item.unitPrice,
       quantity: item.quantity,
-    };
-    orderItems.push(orderItem);
+    });
   }
-  const order = await orderModel.create({
-    orderItems,
-    userId,
-    total: cart.totalAmount,
-    address,
-  });
 
-  await order.save();
-  cart.status = "completed";
-  await cart.save();
-  return { data: order, statusCode: 200 };
+  const cartId = new mongoose.Types.ObjectId(cart.id);
+
+  const claimedCart = await cartModel.findOneAndUpdate(
+    { _id: cartId, status: "active" },
+    { $set: { status: "processing" } },
+    { new: true },
+  );
+
+  if (!claimedCart) {
+    return {
+      data: "Checkout is already being processed",
+      statusCode: 409,
+    };
+  }
+
+  const decrementedItems: {
+    productId: string;
+    quantity: number;
+  }[] = [];
+
+  let orderCreated = false;
+
+  try {
+    for (const item of claimedCart.items) {
+      const productId = item.product.toString();
+
+      const updatedProduct = await productModel.findOneAndUpdate(
+        {
+          _id: new mongoose.Types.ObjectId(productId),
+          stock: { $gte: item.quantity },
+        },
+        {
+          $inc: { stock: -item.quantity },
+        },
+        { new: true },
+      );
+
+      if (!updatedProduct) {
+        throw new Error("INSUFFICIENT_STOCK");
+      }
+
+      decrementedItems.push({
+        productId,
+        quantity: item.quantity,
+      });
+    }
+
+    const order = await orderModel.create({
+      orderItems,
+      userId,
+      total: claimedCart.totalAmount,
+      address: address.trim(),
+    });
+
+    orderCreated = true;
+
+    const completedCart = await cartModel.findOneAndUpdate(
+      { _id: cartId, status: "processing" },
+      { $set: { status: "completed" } },
+      { new: true },
+    );
+
+    if (!completedCart) {
+      console.error(
+        "Order created but cart was not completed:",
+        cartId.toString(),
+      );
+    }
+
+    return { data: order, statusCode: 200 };
+  } catch (error) {
+    if (!orderCreated) {
+      for (const item of decrementedItems) {
+        try {
+          await productModel.updateOne(
+            { _id: new mongoose.Types.ObjectId(item.productId) },
+            { $inc: { stock: item.quantity } },
+          );
+        } catch (rollbackError) {
+          console.error("Stock rollback failed:", rollbackError);
+        }
+      }
+
+      try {
+        await cartModel.updateOne(
+          { _id: cartId, status: "processing" },
+          { $set: { status: "active" } },
+        );
+      } catch (rollbackError) {
+        console.error("Cart rollback failed:", rollbackError);
+      }
+    }
+
+    if (error instanceof Error && error.message === "INSUFFICIENT_STOCK") {
+      return {
+        data: "One or more products are out of stock",
+        statusCode: 400,
+      };
+    }
+
+    console.error("Checkout failed:", error);
+
+    return {
+      data: "Checkout failed. Please try again",
+      statusCode: 500,
+    };
+  }
 };
