@@ -79,11 +79,8 @@ Open `.env` and set your configuration:
 
 ```env
 JWT_SECRET=your_jwt_secret_key
-DATABASE_URL=mongodb://127.0.0.1:27017/ecommerce
+DATABASE_URL=your_mongodb_connection_string
 ```
-
-> **Note:** If using MongoDB Atlas, replace `DATABASE_URL` with your Atlas connection URI:  
-> `mongodb+srv://<username>:<password>@<cluster-url>/ecommerce?retryWrites=true&w=majority`
 
 Start the backend development server:
 
