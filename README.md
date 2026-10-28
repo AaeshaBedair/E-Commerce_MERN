@@ -8,6 +8,34 @@ ELVÉORA is a full-stack luxury perfume e-commerce platform built with the MERN 
 - **Backend:** Node.js, Express, TypeScript, JWT, bcrypt
 - **Database:** MongoDB, Mongoose
 
+## Project Structure
+
+```text
+e-commerce/
+├── backend/
+│   ├── public/images/       # Static product images
+│   └── src/
+│       ├── middlewares/     # Authentication & request middlewares (JWT validation)
+│       ├── models/          # Mongoose schemas & data models (User, Product, Cart, Order)
+│       ├── routes/          # Express route endpoints
+│       ├── services/        # Business logic & database operations
+│       ├── types/           # Backend TypeScript type definitions
+│       └── index.ts         # Express server entry point & configuration
+│
+└── frontend/
+    ├── public/              # Static public assets (favicons, images)
+    └── src/
+        ├── assets/          # Static media & graphics
+        ├── components/      # Reusable UI components (Navbar, ProductCard, Hero, etc.)
+        ├── constants/       # Global constants (API base URL)
+        ├── context/         # React Context state providers (Auth, Cart, Favorites)
+        ├── pages/           # Routed application pages & views
+        ├── styles/          # Theme customization & component styling
+        ├── types/           # Frontend TypeScript interfaces
+        ├── App.tsx          # Main application component & route configuration
+        └── main.tsx         # React client entry point
+```
+
 ## Features
 
 - **Authentication & Security:** User registration and login with bcrypt password hashing, JWT-based sessions, and protected routes.
