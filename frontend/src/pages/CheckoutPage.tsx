@@ -60,22 +60,18 @@ const CheckoutPage = () => {
         throw new Error("Failed to place order");
       }
 
-      // The backend returns the created order directly.
       const order: CheckoutOrder = await response.json();
 
       if (!order._id) {
         throw new Error("Order ID was not returned");
       }
 
-      // The checkout was successful.
-      // Refresh the active cart and navbar count.
       try {
         await refreshCart();
       } catch (refreshError) {
         console.error("Failed to refresh cart:", refreshError);
       }
 
-      // Navigate to the order confirmation page.
       navigate("/order-success", {
         replace: true,
         state: {

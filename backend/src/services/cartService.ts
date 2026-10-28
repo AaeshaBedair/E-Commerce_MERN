@@ -193,7 +193,7 @@ export const checkout = async ({ userId, address }: Checkout) => {
   for (const item of cart.items) {
     const product = await productModel.findById(item.product);
     if (!product) {
-      return { date: "Product not found", statusCode: 400 };
+      return { data: "Product not found", statusCode: 400 };
     }
     const orderItem: IOrderItem = {
       productTitle: product.title,

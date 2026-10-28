@@ -51,7 +51,6 @@ const LoginPage = () => {
         return;
       }
       const data = await response.json();
-      // Adjust this if the backend returns { token: "..." }
       const token = typeof data === "string" ? data : data?.token;
       if (typeof token !== "string" || !token) {
         setError("Login succeeded, but no valid token was returned");
